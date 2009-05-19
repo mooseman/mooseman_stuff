@@ -1,0 +1,76 @@
+
+ *** Cool apps that are already public domain *** 
+
+1 -  The "sc" spreadsheet - ftp://metalab.unc.edu/pub/Linux/apps/financial/spreadsheet/ 
+Ultra-basic, sure, and takes a little while to get used to, but still very cool!  I have a real soft spot for 
+old P.D. apps like this.  Interesting that there are a number of public domain text editors, but very few P.D.  
+spreadsheets (I only know of one other one, called "sss" - simple spreadsheet.  
+
+2 - SQLite - http://www.sqlite.org/  -  A very good P.D. lightweight SQL database engine.  
+
+3 - The "yeanpypa" Python parser framework - 
+http://www.slash-me.net/dev/snippets/yeanpypa/documentation.html
+Yeanpypa = YEt ANother PYthon PArser framework. 
+Very nice!  Inspired by Boost::Spirit and Pyparsing.  
+
+4 -  Retroforth - http://retroforth.org  
+The Forth community seems to be quite a hotbed of P.D.  apps. There are a number of P.D. Forth implementations,
+but Retro is one of the most well-known. 
+
+5 - The LZMA data-compression algorithm -  http://en.wikipedia.org/wiki/LZMA 
+Used in 7-zip (the reference implementation) and a number of other apps.  Released into the 
+public domain on Nov 23rd 2008.  The P.D. LZMA software dev kit can be found here - 
+http://www.7-zip.org/sdk.html 
+
+6 -  A number of text editors, including - 
+Editkit - http://freshmeat.net/projects/editkit/
+
+te - http://retroforth.org/projects/darcs/TE/ 
+
+TDE - the Thomson Davis Editor - http://tde.adoxa.cjb.net/ 
+
+The latest one I've found is "edi" - http://home.arcor.de/mdoege/edi/ 
+
+mg - http://pintday.org/hack/mg/ 
+The OpenBSD (great O.S.!) readme here has more on mg - 
+http://www.openbsd.org/cgi-bin/cvsweb/src/usr.bin/mg/README?rev=1.1&content-type=text/x-cvsweb-markup
+Note - As mentioned in the above readme, it is possible that mg may contain some non-P.D. code, but I've included it here for the 
+sake of completeness as it is quite well-known.  
+
+7 - p4wn -  http://p4wn.sourceforge.net/  -  P.D.  chess game written in javascript!  
+
+8 - pforth - http://www.softsynth.com/pforth/ - Another P.D. Forth.  
+
+9 - The Cat programming language - http://www.cat-language.com/  -  A functional stack-based language.  Quite similar to Forth.  
+ Here's a P.D. Cat interpreter in javascript - http://www.cat-language.com/interpreter.html 
+
+10 - TinyWM - a P.D. window-manager - http://incise.org/tinywm.html 
+
+11 -  libGx - http://freshmeat.net/projects/libgx/ -  A rare beast indeed - the only (that I know of) P.D. gui widget library for X11 apps.  
+
+12 - Artichow - http://freshmeat.net/projects/artichow/ - An amazing-looking P.D. graphing app written in PHP.   
+
+13 - OOTL - http://www.ootl.org/ - The Object-Oriented  Template Library.  Written by Chris Diggins (the author of Cat).  
+
+14 - ncompress - http://ncompress.sourceforge.net/ - P.D. file compression app.  
+
+15 - Pydza - http://sourceforge.net/projects/pydza -  P.D. "Mario-like" game written in Python.  
+
+16 - Javascript inline editor - http://iharder.sourceforge.net/current/misc/inlineeditor/index.html - Very cool!  
+ An app that allows you to dynamically edit code in web pages.  
+
+17 - "Ajax for n00bs" - http://www.hunlock.com/blogs/AJAX_for_n00bs -  Has some great P.D. javascript code.  
+
+18 - LibTom - http://libtomcrypt.com/whatis.html - A number of very good P.D. C libraries.    
+ 
+19 - Balz -  http://balz.sourceforge.net/  -  Another very good P.D. data-compression app - written in C++.  Has an even smaller compression 
+size than lzma!   
+
+20 - 9P - http://users.lava.net/~newsham/plan9/   -  A public domain implementation of Plan 9's 9P network protocol, written in Python (by Tim Newsham).  I haven't actually used this but it looks very cool.  
+
+21 - plaindb -  http://sourceforge.net/projects/plaindb -  A P.D. plain text database app.  
+
+22 - The es shell -  ftp://ftp.sys.utoronto.ca/pub/es/  -  A P.D. shell using a functional programming approach, with higher-order functions.  The shell language is based on the Plan 9 shell - "rc".    
+ 
+23 -  pdksh - a public domain clone of the Korn shell - http://www.math.mun.ca/~michael/pdksh/  -  Note - three files included in pdksh are not P.D. - see the LEGAL link on the pdksh page for details.   
+

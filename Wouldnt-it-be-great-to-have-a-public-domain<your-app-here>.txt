@@ -1,0 +1,18 @@
+
+*** A few thoughts on things that it would be great to have public domain versions of *** 
+
+1 - A public domain Git work-alike.  One of the coolest and most elegant apps around!  
+This could be started as just a basic single-user version control app. The networking side of 
+things could be added later. 
+
+2 -  A public domain "Plan 9" clone.  As I remember seeing somewhere, Plan 9 is sometimes 
+called "Unix done right".  A very elegant OS.  
+
+3 - More public domain parsers!  Boost::Spirit is recommended as a *great* framework for building 
+parsers. I'll be writing some and putting a few of them in here.   
+
+  In the meantime, have a look at the list of cool things that are *already* public domain!  
+
+ - mooseman 
+
+  
