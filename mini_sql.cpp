@@ -1,7 +1,13 @@
 
 //
-//  A simple "toy SQL" parser for Spirit.
-//  Requires -  Boost::Spirit version 2.0 or later
+//  A simple "toy SQL" parser for Spirit. 
+//  
+//  NOTE - as of now (30th May 2009) this parser requires 
+//  Boost::Spirit version 2.1. At present you will need to 
+//  get that version via svn. The following command will check out 
+//  Boost-trunk - that will get you this version - 
+//  
+//  svn co http://svn.boost.org/svn/boost/trunk boost-trunk
 //
 //  Written by:  Andy Elvey
 // 
@@ -50,7 +56,7 @@
 using namespace boost::spirit;
 using namespace boost::spirit::qi;
 using namespace boost::spirit::ascii;
-using namespace boost::spirit::arg_names;
+using namespace boost::spirit::qi::labels;
 
 
 ///////////////////////////////////////////////////////////////////////////////
