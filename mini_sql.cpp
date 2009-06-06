@@ -1,13 +1,7 @@
 
 //
-//  A simple "toy SQL" parser for Spirit. 
-//  
-//  NOTE - as of now (30th May 2009) this parser requires 
-//  Boost::Spirit version 2.1. At present you will need to 
-//  get that version via svn. The following command will check out 
-//  Boost-trunk - that will get you this version - 
-//  
-//  svn co http://svn.boost.org/svn/boost/trunk boost-trunk
+//  A simple "toy SQL" parser for Spirit.
+//  Requires -  Boost::Spirit version 2.0 or later
 //
 //  Written by:  Andy Elvey
 // 
@@ -33,14 +27,6 @@
 //   select * from mystuff where var1 = 'abc' ;  ) make sure that 
 //  the variable is in **single** quotes, as shown above. 
 //
-//  Examples of queries that will work - 
-//    select * from table1, table2 where table1.foo = table2.bar ;  
-//    select var1, var2, var3 from moredata, mystuff, yourdata ; 
-//    select test as var1, foo as var2 from mystuff 
-//          where a < 45 and b in (1, 2, 3) or c <= 78 ;  
-//    select table1.foo as test1, table2.bar as test2 from mytables;  
-//    select table1.foo as test, table2.bar as test2 from mytables where 
-//           x > 334 and y < 5463 and z = 45; 
 //
 //#define BOOST_SPIRIT_DEBUG  ///$$$ DEFINE THIS WHEN DEBUGGING $$$///
 
@@ -56,7 +42,7 @@
 using namespace boost::spirit;
 using namespace boost::spirit::qi;
 using namespace boost::spirit::ascii;
-using namespace boost::spirit::qi::labels;
+using namespace boost::spirit::qi::labels;  
 
 
 ///////////////////////////////////////////////////////////////////////////////
