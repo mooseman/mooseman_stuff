@@ -75,6 +75,86 @@ apps and a few other bits and pieces.
 </tr> 
 
 <tr>
+<td>Programming Language</td> 
+<td>HLA ( High Level Assembly )</td> 
+<td>By Randall Hyde</td> 
+<td><a href="http://webster.cs.ucr.edu/AsmTools/HLA/index.html">HLA</a></td> 
+<td>An *excellent* way to learn assembly-language programming. </td> 
+</tr> 
+
+<tr>
+<td>Graphics Library</td> 
+<td>libGx</td> 
+<td>by John Culp</td> 
+<td><a href="http://www.johnculp.net/">libGx</a></td> 
+<td>AFAIK, the only P.D. gui widget library for X11 apps.</td> 
+</tr> 
+
+<tr>
+<td>Graphics Framework for PHP</td> 
+<td>Artichow</td> 
+<td>(Authors not known) </td> 
+<td><a href="http://www.artichow.org/">Artichow</a></td> 
+<td>An **outstanding** graphics framework!  Very high-quality graphics. </td> 
+</tr> 
+
+<tr>
+<td>C++ Programming Library</td> 
+<td>OOTL ( Object-Oriented Template Library )</td> 
+<td>By Christopher Diggins</td> 
+<td><a href="http://www.ootl.org/">OOTL</a></td> 
+<td>A general-purpose programming library for C++.</td> 
+</tr> 
+
+<tr>
+<td>Programming Language</td> 
+<td>Cat</td> 
+<td>By Christopher Diggins</td> 
+<td><a href="http://www.cat-language.com/">Cat</a></td> 
+<td>A functional, stack-based programming language.</td> 
+</tr> 
+
+<tr>
+<td>File Compression</td> 
+<td>Ncompress</td> 
+<td>By Mike Frysinger</td> 
+<td><a href="http://ncompress.sourceforge.net/">Ncompress</a></td> 
+<td>Public-domain file-compression library</td> 
+</tr> 
+
+<tr>
+<td>File Compression</td> 
+<td>Balz</td> 
+<td>By Ilia Muraviev</td> 
+<td> <a href="http://balz.sourceforge.net/">Balz</a></td> 
+<td>Another public-domain file-compression library</td> 
+</tr> 
+
+<tr>
+<td>Shell</td> 
+<td>es</td> 
+<td>By Byron Rakitzis and Paul Haahr</td> 
+<td><a href="http://www.webcom.com/~haahr/es/es-usenix-winter93.html">Es</a></td> 
+<td>An excellent shell! A P.D. shell using a functional programming approach, with higher-order functions.  The shell language is based on the Plan 9 shell - "rc". </td> 
+</tr> 
+
+<tr>
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+</tr> 
+
+<tr>
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+<td>    </td> 
+</tr> 
+
+<tr>
 <td>    </td> 
 <td>    </td> 
 <td>    </td> 
