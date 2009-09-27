@@ -1,0 +1,21 @@
+
+***  The Cube text editor *** 
+
+This is a very small and simple public-domain text editor based on "Ersatz Emacs" 
+by Chris Baird  <cjb@brushtail.apana.org.au> .  
+The original README by Chris is saved as README-ee.  
+
+As with Chris' version, all source code here is released to the public domain. 
+
+All credit for the code here goes to Chris.  All I have done is - 
+
+a) Commented out several lines which seemed to be causing errors.  After having 
+done that, the code compiled fine (although there are still a few warning messages). 
+
+b)  Changed the name to "Cube".  No particular reason for the name, other than that 
+it is "short and snappy"..... 
+
+ "Share and enjoy......"     :)  
+-  mooseman 
+
+
