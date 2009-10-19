@@ -139,19 +139,31 @@ apps and a few other bits and pieces.
 </tr> 
 
 <tr>
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
+<td>Venti daemon</td> 
+<td>ventisrv</td> 
+<td>By Mechiel Lukkien</td> 
+<td><a href="http://www.ueber.net/code/r/ventisrv">ventisrv</a></td> 
+<td> (From the ventisrv page)-   ventisrv is a venti daemon for inferno, written in limbo.  it has
+an in-memory index.  vcache is a (in-memory) venti cache.  his
+package also contains simple tools to write to/read from a venti
+server.  This code is the partial result of a (successful) google summer of
+code 2007 project, for the project "plan 9/inferno", subproject "ventivac".
+ </td> 
 </tr> 
 
 <tr>
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
-<td>    </td> 
+<td>Venti daemon</td> 
+<td>memventi</td> 
+<td>By Mechiel Lukkien</td> 
+<td><a href="http://www.ueber.net/code/r/memventi">memventi</a> </td> 
+<td>( From the memventi page) - memventi is a venti daemon (written in C). It speaks the same venti protocol as
+the real venti in Plan 9 from Bell Labs. In short, it is a storage
+server that stores data blocks up to 56kb using its sha1 hash (called
+its score) to address it.  The main difference between memventi and
+venti is that where venti keeps an index of present scores in a big
+on-disk lookup table,  memventi keeps the index in memory (in an
+memory-efficient manner). This allows for a simpler design though
+with limited storage capacity. </td> 
 </tr> 
 
 <tr>
