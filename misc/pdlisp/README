@@ -1,0 +1,11 @@
+
+   ***  README -  pdlisp *** 
+
+ This directory contains a small public-domain Lisp interpreter 
+written in Java ( by Curran Kelleher ).  
+Many thanks to Curran for writing this interpreter!  
+
+The code was obtained from here -  
+http://lifeofaprogrammergeek.blogspot.com/2009/04/tiny-lisp-interpreter.html
+
+

@@ -1,0 +1,1122 @@
+#!/bin/sh
+#
+# shar archiver, delete everything above the #!/bin/sh line
+# and run through sh (not csh)
+#
+echo 'shar: extracting "p2c.doc" (2297 characters)'
+sed 's/^XX //' > p2c.doc << 'XXX_EOF_XXX'
+XX NAME
+XX     p2c	- Pascal to C translator
+XX 
+XX SYNOPSIS
+XX     p2c < foo.pas > foo.c
+XX 
+XX DESCRIPTION
+XX     p2c converts many Pascal structures to their C equivalent.
+XX     The Pascal source can be in upper, lower, or mixed case; case is
+XX     preserved during translation.
+XX 
+XX     Structures translated properly include simple assignment
+XX     and comparison statments, variable, type, and label declarations, 
+XX     enumerated types, and procedure and function declarations and instances.
+XX 
+XX     Structures NOT translated properly include sets, constant declarations,
+XX     variant records, files, subrange types, VAR parameters, CASE, FOR, 
+XX     WITH, READ, and WRITE statements, and nested procedures.
+XX 
+XX     The translator provides hints about untranslated regions by inserting
+XX     UPPERCASE messages enclosed with /* and */ into the translated source.
+XX     Error messages are of the form /***# Expected ... ***/.
+XX 
+XX     Human massaging of the output will certainly be needed.
+XX     In fact, you may want to modify the keyword translation table
+XX     to better translate your particular variant of Pascal.
+XX 
+XX IMPLEMENTATION
+XX     Written in C for Sun UNIX workstations; ought to compile on other 
+XX     systems without change...
+XX     Some of the translation is done with a keyword table, but most of
+XX     the work is done by a recursive-descent parser.
+XX 
+XX BUGS
+XX     Not well tested.
+XX     Error recovery is very poor- the first error in translation inside
+XX     the recursive-descent section will result in a very long stream of
+XX     error messages.
+XX     Some of the bread-and-butter structures of Pascal- like CASE and FOR-
+XX     are not translated properly, although it would be easy to extend
+XX     the parser to understand them.
+XX 
+XX     I welcome bug reports, and invite anyone interested to implement
+XX     more PASCAL structures; I probably won't work on it much, because
+XX     I don't use Pascal these days.
+XX 
+XX VERSION
+XX     This version by Daniel Kegel <dan@srs.UUCP> or <seismo!rochester!srs!dan>,
+XX     25 March 87.
+XX     Based on a program by James A Mullens  <jcm@ornl-msr.arpa>  29-Jan-87
+XX     which was in turn based on two nearly identical programs by Robert Heller  
+XX     (1 Feb 1985) and Rick Walker <walker@hpl-opus.hp.COM> (8 Sep 1986)
+XX     which were reportedly derived from a similar program in the Feb 85 Byte
+XX     which did a C TO PASCAL conversion.
+XX 
+XXX_EOF_XXX
+if test 2297 -ne "`wc -c < p2c.doc`"
+then
+    echo 'shar: transmission error on "p2c.doc"'
+fi
+echo 'shar: extracting "p2c.h" (1096 characters)'
+sed 's/^XX //' > p2c.h << 'XXX_EOF_XXX'
+XX /*---- p2c.h ------------------------------------------------------
+XX Defines and Global Variable for the Pascal to C translator
+XX 3/25/87 Daniel Kegel (seismo!rochester!srs!dan)
+XX -------------------------------------------------------------------*/
+XX 
+XX #define MAXTOKLEN 2048	/* maximum token length */
+XX     /* Note: even comments are jammed into a token; that's why this is big. */
+XX 
+XX typedef struct {	/* holds keywords, operators, etc. */
+XX     char str[MAXTOKLEN];
+XX     int kind;		/* code from table of wnodes */
+XX } token;
+XX 
+XX typedef struct {
+XX   int  ktype;		/* the meaning of the keyword */
+XX   char *pname;		/* the Pascal name of the keyword */
+XX   char *cname;		/* the C      name of the keyword */
+XX } wnode;
+XX 
+XX 	/* Allocate or Reallocate n 'type' items */
+XX #define MALLOC(type, n) \
+XX 	((type *) DoMalloc((unsigned) sizeof(type) * (n)))
+XX #define REALLOC(ptr, type, n) \
+XX 	((type *) DoRealloc((char *)ptr, (unsigned) sizeof(type) * (n)))
+XX 
+XX #ifndef TRUE
+XX #define TRUE 1
+XX #define FALSE 0
+XX #endif
+XX #ifndef boolean
+XX #define boolean int
+XX #endif
+XX 
+XX /*--- The Global Variable ---------*/
+XX token cTok;		/* current token from scanner */
+XX 
+XXX_EOF_XXX
+if test 1096 -ne "`wc -c < p2c.h`"
+then
+    echo 'shar: transmission error on "p2c.h"'
+fi
+echo 'shar: extracting "ktypes.h" (1438 characters)'
+sed 's/^XX //' > ktypes.h << 'XXX_EOF_XXX'
+XX /*--- ktypes.h ------------------------------------------------------
+XX Keyword types for the Pascal to C translator.
+XX 3/25/87 Daniel Kegel (seismo!rochester!srs!dan)
+XX ---------------------------------------------------------------------*/
+XX #define T_ZIP		0	/* Nondescript identifier */
+XX #define T_BEGIN		1	/* BEGIN */
+XX #define T_END		2	/* END */
+XX #define T_PROC		3	/* PROCEDURE */
+XX #define T_FUNC		4	/* FUNCTION */
+XX #define T_FORWARD	5	/* FORWARD */
+XX #define T_CONST 	6	/* CONST */
+XX #define T_VAR	 	7	/* VAR */
+XX #define T_COMPARE	8	/* ==, <>, >, < */
+XX #define T_EQUALS	9	/* = alone; in CONST, TYPE or comparison */
+XX #define T_COLON 	10	/* : alone; in VAR, READ, or WRITE */
+XX #define T_SEMI		11	/* ; alone */
+XX #define T_LPAREN	12	/* ( alone */
+XX #define T_RPAREN	13	/* ) alone */
+XX #define T_SPACE 	14	/* a string of blanks, tabs, and/or newlines */
+XX #define T_STRUCTMEMBER	15	/* ^. */
+XX #define T_ASSIGN	16	/* := */
+XX #define T_STRING	17	/* quoted string */
+XX #define T_COMMENT	18	/* comment text */
+XX #define T_EOF		19	/* end of source file */
+XX #define T_COMMA		20	/* , */
+XX #define T_LABEL		21	/* LABEL */
+XX #define T_DEREF		22	/* ^ alone */
+XX #define T_LBRACKET	23	/* [ */
+XX #define T_RBRACKET	24	/* ] */
+XX #define T_ARRAY		25	/* ARRAY */
+XX #define T_RANGE		26	/* .. */
+XX #define T_OF		27	/* OF */
+XX #define T_RECORD	28	/* RECORD */
+XX #define T_FILE		29	/* FILE */
+XX #define T_TYPE		30	/* TYPE */
+XX #define T_STRINGTYPE	31	/* STRING(n) or STRING[n] type */
+XX #define T_CASE		32	/* CASE */
+XXX_EOF_XXX
+if test 1438 -ne "`wc -c < ktypes.h`"
+then
+    echo 'shar: transmission error on "ktypes.h"'
+fi
+echo 'shar: extracting "p2c.c" (10964 characters)'
+sed 's/^XX //' > p2c.c << 'XXX_EOF_XXX'
+XX /*----------------------------------------------------------------------
+XX   PAS2C.C  Version 1.1
+XX   Translate Pascal keywords and operators to C.
+XX   useage:  pas2c < pascal_source  > c_source
+XX     i.e., this is a filter program which filters out the Pascal.
+XX   By James A Mullens <jcm@ornl-msr.arpa>	29-Jan-87
+XX 
+XX   Revisions:
+XX     Version 1.1  17-Feb-87  Changed several keyword translations on the
+XX     advice of James R. Van Zandt <jrv@mitre-bedford.ARPA>.  Added many
+XX     more translations.  Added a source for function strcmpi for the
+XX     unfortunates who don't have this case-insensitive string comparison
+XX     in their C library.
+XX 
+XX     Dan Kegel     15 Mar 87	Made it work on Sun workstation.  Ripped out
+XX     translations that hurt translation of a large (20,000 line) Turbo program.
+XX ----------------------------------------------------------------------*/
+XX 
+XX #include <stdio.h>	/* standard I/O */
+XX #include <ctype.h>	/* character macros */
+XX #include <string.h>	/* string functions */
+XX #include "p2c.h"
+XX #include "ktypes.h"	/* keyword type definitions */
+XX 
+XX boolean WasSemi;	/* kludge to avoid duplicating semicolons */
+XX 
+XX /* Change these translations to fit your desires, but the Pascal names must 
+XX    be written in lower case and must be in alphabetical order.  If you include 
+XX    a C comment in your translation output as a HINT to the programmer, write 
+XX    it in CAPITALs, else write the comment in lower case, eh?
+XX */
+XX 
+XX wnode xlate[] = {
+XX   {T_ZIP,	"and",		"&&"	},
+XX   {T_ARRAY,	"array",	""	},	/* see parseTypeDecl */
+XX   {T_BEGIN,	"begin",	"{"	},
+XX   {T_ZIP,	"boolean",	"boolean"},
+XX   {T_ZIP,	"byte",		"char"	},	/* Turbo */
+XX   {T_CASE,	"case",		"switch"},
+XX   {T_CONST,	"const",	"/* CONST */"},
+XX   {T_ZIP,	"div",		"/"	},
+XX   {T_ZIP,	"do",		")"	},
+XX   {T_ZIP,	"downto",	";/*DOWNTO*/"},
+XX   {T_ZIP,	"else",		"; else"},
+XX   {T_END,	"end",		"}"	},
+XX   {T_ZIP,	"false",	"FALSE"	},	
+XX   {T_FILE,	"file",		""	},	/* see parseTypeDecl() */
+XX   {T_ZIP,	"for",		"for ("	},
+XX   {T_FORWARD,	"forward",	""	},
+XX   {T_FUNC,	"function",	""	},	/* see parseProcedure() */
+XX   {T_ZIP,	"if",		"if ("	},
+XX   {T_ZIP,	"implementation", "/* private (static) section */"},
+XX   {T_ZIP,	"input",	"stdin"	},
+XX   {T_ZIP,	"integer",	"int"	},
+XX   {T_ZIP,	"interface",	"/* exported symbol section */"},
+XX   {T_ZIP,	"ioresult",	"errno"	},	/* UCSD, Turbo */
+XX   {T_LABEL,	"label",	""	},	/* see parseLabel() */
+XX   {T_ZIP,	"mod",		"%"	},
+XX   {T_ZIP,	"not",		"!"	},
+XX   {T_OF,	"of",		""	},	/* see parseTypeDecl() */
+XX   {T_ZIP,	"or",		"||"	},
+XX   {T_ZIP,	"output",	"stdout"},
+XX   {T_ZIP,	"packed",	"/* PACKED */"},
+XX   {T_PROC,	"procedure",	"void"	},	/* see parseProcedure() */
+XX   {T_ZIP,	"program",	"main"	},
+XX   {T_ZIP,	"read",		"scanf"	},
+XX   {T_ZIP,	"readln",	"/*LINE*/scanf"},/* hint - read end-of-line */
+XX   {T_ZIP,	"real",		"double"},	/* or "float" */
+XX   {T_RECORD,	"record",	""	},	/* see parseTypeDecl() */
+XX   {T_ZIP,	"repeat",	"do {"	},
+XX   {T_STRINGTYPE,"string",	""	},	/* UCSD, Turbo string type */
+XX   {T_ZIP,	"text",		"FILE *"},	/* UCSD, Turbo file type */
+XX   {T_ZIP,	"then",		")"	},
+XX   {T_ZIP,	"to",		";"	},
+XX   {T_ZIP,	"true",		"TRUE"	},	
+XX   {T_TYPE,	"type",		""	},	/* see parseType() */
+XX   {T_ZIP,	"until",	"} until ("},
+XX   {T_ZIP,	"uses",		"/* USES */\n#include"},
+XX   {T_VAR,	"var",		"/* VAR */"},	/* see parseProc, parseVar() */
+XX   {T_ZIP,	"while",	"while ("},
+XX   {T_ZIP,	"with",		"/* WITH */"},	/*hint-set pointer to struct*/
+XX   {T_ZIP,	"write",	"printf"},
+XX   {T_ZIP,	"writeln",	"/*LINE*/printf"},/* hint - write newline */
+XX   {T_ZIP,	"",		""	}	/* marks end of xlate table */
+XX };
+XX 
+XX wnode theend = {T_ZIP,	"", ""};
+XX 
+XX wnode *hash[26];		/* quick index into the translation array */
+XX 
+XX /* Fill in the quick index ("hash") array 
+XX */
+XX void init_hash()
+XX {
+XX     int ch, cmp;
+XX     wnode *nptr = xlate;
+XX 
+XX     for (ch='a'; ch<='z'; ch++) {
+XX 	while (nptr->pname[0] && (cmp = ch - *nptr->pname) > 0) 
+XX 	    nptr++;
+XX 	hash[ch-'a'] = (cmp==0) ? nptr : &theend;
+XX     }
+XX }
+XX 
+XX 
+XX /* compare two strings without regard to case,
+XX    the equivalent of this function may already be in your C library 
+XX    Used to fail on Suns because it used tolower on lowercase chars...
+XX    Assumes second argument already lowercase.
+XX */
+XX int strcmpi(s1,s2)
+XX     register char *s1, *s2;
+XX { 
+XX     register char c1;
+XX 
+XX     while ((c1= *s1++) && *s2) {	/* get char, advance ptr */
+XX 	if (isupper(c1)) c1 = tolower(c1);
+XX 	if (c1 != *s2) break;
+XX 	s2++;
+XX     }
+XX     return(c1 - *s2);
+XX }
+XX 
+XX 
+XX /* Pass an identifier through the translation table; return its
+XX    keyword type.  Translated keyword left in same buffer.
+XX */
+XX int
+XX translate(word)
+XX     register char *word;
+XX { 
+XX     register wnode *xptr;
+XX     int nomatch;
+XX     int c;
+XX 
+XX     c = *word;
+XX     if (isalpha(c)) {
+XX 	if (isupper(c)) c=tolower(c);
+XX 	xptr = hash[c - 'a'];
+XX 	while ( xptr->pname[0] && (nomatch = strcmpi(word,xptr->pname)) > 0 ) 
+XX 	    xptr++;
+XX 	if (!nomatch) {
+XX 	    word[0]=0;
+XX 	    if (!WasSemi && xptr->ktype == T_END)
+XX 		strcpy(word, ";");
+XX 	    strcat(word, xptr->cname);
+XX 	    return(xptr->ktype);
+XX 	}
+XX     }
+XX     return(T_ZIP);
+XX }
+XX 
+XX #define Q_NOQUOTE  1
+XX #define Q_ONEQUOTE 2
+XX #define Q_DONE     3
+XX #define Q_ERR      4
+XX 
+XX #define Q_C_ESCAPES  FALSE   /* Set true if your Pascal knows backslashes */
+XX 
+XX /*---- parseQuotedString -------------------------------------------------
+XX Accepts Pascal quoted string from stdin, converts to C quoted string, and 
+XX places in buf.
+XX Examples:
+XX   'hi' -> "hi"    'hi''' -> "hi'"  'hi''''' -> "hi''"
+XX   ''   -> ""      ''''   -> "'"    ''''''   -> "''"
+XX   ''hi' -> ERROR  '''hi' -> "'hi"  '''''hi' -> "''hi"
+XX   'I''m'  -> "I'm"
+XX Double quotes and backslashes are preceded with backslashes, except that
+XX if Q_C_ESCAPES is TRUE, backslashes are left naked.
+XX --------------------------------------------------------------------------*/
+XX void
+XX parseQuotedString(buf)
+XX char *buf;
+XX {
+XX     register char c;
+XX     register char *letter=buf;
+XX     int qstate;
+XX 
+XX     *letter++ = '"';
+XX     qstate = Q_NOQUOTE;
+XX     while (qstate < Q_DONE) {
+XX 	switch (c=getchar()) {
+XX 	case '\'':
+XX 	    switch (qstate) {
+XX 	    case Q_NOQUOTE:  
+XX 		qstate = Q_ONEQUOTE; break;
+XX 	    case Q_ONEQUOTE: 
+XX 		*letter++ = c; qstate = Q_NOQUOTE; break;
+XX 	    }
+XX 	    break;
+XX 	case EOF:
+XX 	case '\n':
+XX 	    qstate= (qstate==Q_ONEQUOTE) ? Q_DONE : Q_ERR;
+XX 	    ungetc(c,stdin);
+XX 	    break;
+XX 	default:
+XX 	    switch (qstate) {
+XX 	    case Q_ONEQUOTE: 
+XX 		ungetc(c,stdin); qstate = Q_DONE; break;
+XX 	    case Q_NOQUOTE:
+XX 		if (c=='\\' && !Q_C_ESCAPES) *letter++ = c;
+XX 		if (c=='"') *letter++ = '\\';
+XX 		*letter++ = c; 
+XX 		break; 
+XX 	    }
+XX 	}
+XX     }
+XX     *letter++ = '"';
+XX     *letter++ = '\0';
+XX     if (qstate == Q_ERR) {
+XX 	fprintf(stderr,"Newline in string constant: %s\n",buf);
+XX 	fprintf(stdout," %c*** \\n IN STRING ***%c ",
+XX 	    '/', buf, '/');
+XX     }
+XX }
+XX 
+XX void
+XX getTok()
+XX {
+XX     register char *letter = cTok.str;
+XX     register char *sEnd = letter + MAXTOKLEN-3;
+XX     register int c;
+XX 
+XX     c = getchar();
+XX     if (isalnum(c)) {
+XX 	while (c != EOF && isalnum(c)) {
+XX 	    *letter++ = c;
+XX 	    c = getchar();
+XX 	}
+XX 	ungetc(c,stdin);
+XX 	*letter++ = 0;
+XX 	cTok.kind = translate(cTok.str);
+XX     } else {
+XX 	switch(c) {
+XX 	case '\n':	/* newline */
+XX 	case 0x20:	/* space */
+XX 	case 0x9:	/* tab */
+XX 	    do		/* Gather a string of blank space into one token */
+XX 		*letter++ = c;
+XX 	    while ((c=getchar()) != EOF && isspace(c));
+XX 	    ungetc(c, stdin);
+XX 	    *letter++ = '\0';
+XX 	    cTok.kind = T_SPACE;
+XX 	    break;
+XX 	case '\'': 				/* Quoted String */
+XX 	    parseQuotedString(cTok.str);
+XX 	    cTok.kind = T_STRING;
+XX 	    break;
+XX 	case '{' : 				/* Curly Comment */
+XX 	    *letter++='/'; 
+XX 	    *letter++='*';
+XX 	    while ((c=getchar()) != EOF && c!='}' && letter!=sEnd)
+XX 		*letter++ = c;
+XX 	    if (letter == sEnd) {
+XX 		printf("/***ERROR: Comment too long (sorry) ***/");
+XX 		while ((c=getchar()) != EOF && c!='}')
+XX 		    ;
+XX 	    }
+XX 	    strcpy(letter, "*/");
+XX 	    cTok.kind = T_COMMENT;
+XX 	    break;
+XX 	case '(' : 
+XX 	    if ((c=getchar())!='*') {		/* Parenthesis */
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter, "(");
+XX 		cTok.kind = T_LPAREN;
+XX 	    } else {
+XX 		register int lastc = '\0';	/* (* Comment *) */
+XX 		*letter++='/'; 
+XX 		*letter++='*';
+XX 		while ((c=getchar())!=EOF && !(c==')' && lastc == '*') && 
+XX 		    letter != sEnd) {
+XX 		    lastc = c;
+XX 		    *letter++ = c;
+XX 		}
+XX 		if (letter == sEnd) {
+XX 		    printf("/***ERROR: Comment too long (sorry) ***/");
+XX 		    while ((c=getchar())!=EOF && !(c==')' && lastc == '*'))
+XX 			lastc = c;
+XX 		}
+XX 		strcpy(letter, "/");		/* * already there! */
+XX 		cTok.kind = T_COMMENT;
+XX 	    }
+XX 	    break;
+XX 	case ')' :
+XX 	    strcpy(letter, ")");
+XX 	    cTok.kind = T_RPAREN;
+XX 	    break;
+XX 	case ':' : 
+XX 	    if ((c=getchar())=='=') {		/* Assignment */
+XX 		strcpy(letter, "=");
+XX 		cTok.kind = T_ASSIGN;
+XX 	    } else {				/* Colon */
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter, ":");
+XX 		cTok.kind = T_COLON;
+XX 	    }
+XX 	    break;
+XX 	case '=':
+XX 	    strcpy(letter, "==");		/* Might be equality test...*/
+XX 	    cTok.kind = T_EQUALS;		/* depends on parse state */
+XX 	    break;
+XX 	case '<' : 
+XX 	    switch (c=getchar()) {
+XX 	    case '>':  
+XX 		strcpy(letter, "!=");
+XX 		break;
+XX 	    case '=':  
+XX 		strcpy(letter, "<=");
+XX 		break;
+XX 	    default :  
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter,"<");
+XX 	    }
+XX 	    cTok.kind = T_COMPARE;
+XX 	    break;
+XX 	case '>' : 
+XX 	    if ((c=getchar()) == '=')
+XX 		strcpy(letter, ">=");
+XX 	    else {
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter, ">");
+XX 	    }
+XX 	    cTok.kind = T_COMPARE;
+XX 	    break;
+XX 	case '^' :
+XX 	    if ((c=getchar()) == '.') {	/* perhaps we should skip blanks? */
+XX 		strcpy(letter, "->");
+XX 		cTok.kind = T_STRUCTMEMBER;
+XX 	    } else {
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter, "[0]");	/* '*' would have to go in front */
+XX 		cTok.kind = T_DEREF;
+XX 	    }
+XX 	    break;
+XX 	case '$' :			/* Turbo Pascal extension */ 
+XX 	    strcpy(letter, "0x");
+XX 	    cTok.kind = T_ZIP;
+XX 	    break;
+XX 	case ';' : 			/* Semicolon- translation depends on */
+XX 	    strcpy(letter, ";");	/* parse state... */
+XX 	    cTok.kind = T_SEMI;
+XX 	    break;
+XX 	case '.':
+XX 	    if ((c=getchar()) == '.') {
+XX 		cTok.kind = T_RANGE;
+XX 		letter[0]=0;
+XX 	    } else {
+XX 		ungetc(c,stdin);
+XX 		strcpy(letter, ".");
+XX 		cTok.kind = T_ZIP;
+XX 	    }
+XX 	    break;
+XX 	case '[':
+XX 	    *letter++ = c; *letter = '\0';
+XX 	    cTok.kind = T_LBRACKET;
+XX 	    break;
+XX 	case ']':
+XX 	    *letter++ = c; *letter = '\0';
+XX 	    cTok.kind = T_RBRACKET;
+XX 	    break;
+XX 	case ',':
+XX 	    *letter++ = c; *letter = '\0';
+XX 	    cTok.kind = T_COMMA;
+XX 	    break;
+XX 	case EOF:			/* end of file */
+XX 	    cTok.kind = T_EOF;
+XX 	    break;
+XX 	default: 
+XX 	    *letter++ = c;		/* Pass unknown chars thru as tokens */
+XX 	    *letter = '\0';
+XX 	    cTok.kind = T_ZIP;
+XX 	}
+XX     }
+XX }
+XX 
+XX main(argc, argv)
+XX int argc;
+XX char **argv;
+XX {
+XX     int debug;
+XX     
+XX     debug = (argc > 1);
+XX     init_hash();
+XX     WasSemi = FALSE;
+XX 
+XX     getTok(); 
+XX     do {
+XX 	switch(cTok.kind) {
+XX 	case T_VAR:
+XX 	    parseVar();
+XX 	    break;
+XX 	case T_PROC:
+XX 	case T_FUNC:
+XX 	    parseProcedure();
+XX 	    break;
+XX 	case T_LABEL:
+XX 	    parseLabel();
+XX 	    break;
+XX 	case T_TYPE:
+XX 	    parseType();
+XX 	    break;
+XX 	default:
+XX 	    if (debug)
+XX 		printf("'%s' %d\n", cTok.str, cTok.kind);
+XX 	    else {	/* fancy stuff to avoid duplicating semicolons */
+XX 		if (cTok.kind != T_SEMI || !WasSemi)
+XX 		    fputs(cTok.str, stdout);
+XX 		if (cTok.kind != T_SPACE && cTok.kind != T_COMMENT)
+XX 		    WasSemi = (cTok.kind == T_SEMI);
+XX 	    }
+XX 	    getTok();
+XX 	}
+XX     } while (cTok.kind != T_EOF);
+XX }
+XX 
+XXX_EOF_XXX
+if test 10964 -ne "`wc -c < p2c.c`"
+then
+    echo 'shar: transmission error on "p2c.c"'
+fi
+echo 'shar: extracting "proc.c" (14091 characters)'
+sed 's/^XX //' > proc.c << 'XXX_EOF_XXX'
+XX /*--- proc.c -------------------------------------------------------------
+XX Procedure, type, variable, and label parsing routines for the Pascal to C
+XX translator.
+XX 3/25/87 Daniel Kegel (seismo!rochester!srs!dan)
+XX --------------------------------------------------------------------------*/
+XX #include <stdio.h>
+XX #include <string.h>
+XX #include "p2c.h"
+XX #include "ktypes.h"	/* keyword type definitions */
+XX 
+XX #define SLEN 80	
+XX typedef char sstr[SLEN+1];	/* short string */
+XX #define PLEN 1024
+XX typedef char pstr[PLEN+1];	/* long string */
+XX 
+XX /* pgroup is used in parseProcedure to store the procedure's parameters */
+XX struct pgroup {
+XX     sstr pclass;	/* VAR or empty */
+XX     sstr ptype;		/* what type all these guys are */
+XX     pstr params;	/* identifiers separated by commas and space */
+XX };
+XX 
+XX boolean
+XX isSectionKeyword(k)
+XX register int k;
+XX {
+XX     return(k==T_CONST||k==T_TYPE||k==T_VAR||k==T_PROC||k==T_FUNC||k==T_BEGIN);
+XX }
+XX 
+XX /*--- skipSpace ---------------------------------------------------------
+XX Accepts and throws away space and comment tokens.
+XX ------------------------------------------------------------------------*/
+XX void
+XX skipSpace()
+XX {
+XX     do
+XX 	getTok();
+XX     while (cTok.kind == T_SPACE || cTok.kind == T_COMMENT);
+XX     if (cTok.kind == T_EOF) {
+XX 	printf("\n/***# EOF ***/\n");
+XX 	fflush(stdout);
+XX 	exit(1);
+XX     }
+XX }
+XX 
+XX /*--- parseSpace ---------------------------------------------------------
+XX Accepts and prints space and comment tokens.
+XX ------------------------------------------------------------------------*/
+XX void
+XX parseSpace()
+XX {
+XX     do {
+XX 	getTok();
+XX 	if (cTok.kind == T_SPACE || cTok.kind == T_COMMENT)
+XX 	    fputs(cTok.str, stdout);
+XX     } while (cTok.kind == T_SPACE || cTok.kind == T_COMMENT);
+XX     if (cTok.kind == T_EOF) {
+XX 	printf("\n/***# EOF ***/\n");
+XX 	fflush(stdout);
+XX 	exit(1);
+XX     }
+XX }
+XX 
+XX void
+XX expected(s)
+XX char *s;
+XX {
+XX     printf("/***# Expected %s ***/", s);
+XX     fflush(stdout);
+XX }
+XX 
+XX /*---- expectThing -------------------------------------------------------
+XX Makes sure current token is of desired type, else prints error message.
+XX ------------------------------------------------------------------------*/
+XX 
+XX void
+XX expectThing(s, k)
+XX char *s;
+XX {
+XX     if (cTok.kind != k)
+XX 	expected(s);
+XX }
+XX 
+XX /*---- getThing -------------------------------------------------------
+XX Gets next nonblank token, makes sure it is desired type, else prints error 
+XX message.
+XX ------------------------------------------------------------------------*/
+XX void
+XX getThing(s, k)
+XX char *s;
+XX int k;
+XX {
+XX     skipSpace();
+XX     expectThing(s, k);
+XX }
+XX 
+XX /*---- parseVarDec ----------------------------------------------------
+XX Translates one (possibly multi-)variable declaration.
+XX Works for complex types, but can't be used to parse procedure parameters.
+XX On entry, cTok is first token in identifier list.
+XX On exit, cTok is the token after the type- probably T_SEMI.
+XX Semicolon is translated, too.
+XX ----------------------------------------------------------------------*/
+XX 
+XX struct ident {			/* Used to save variable declaration body */
+XX     char *str;			/* until type is known */
+XX     int  kind;
+XX };
+XX #define MAXIDENTS 132		/* allows about 32 variables */
+XX 
+XX void
+XX parseVarDec()
+XX {
+XX     void parseTypeDecl();		/* forward declaration */
+XX     sstr indir, index;
+XX     struct ident idents[MAXIDENTS];
+XX     int i, n;
+XX 
+XX     /* Get identifiers, up to the colon that marks end of list */
+XX     n=0;
+XX     while (cTok.kind != T_COLON) {
+XX 	if (n == MAXIDENTS-1)
+XX 	    printf("/***# Variable declaration too long ***/");
+XX 	if (n == MAXIDENTS) n--;
+XX 	idents[n].str = MALLOC(char, strlen(cTok.str));
+XX 	strcpy(idents[n].str, cTok.str);
+XX 	idents[n++].kind = cTok.kind;
+XX 	if (cTok.kind != T_ZIP && cTok.kind != T_COMMA 
+XX 	&& cTok.kind != T_SPACE && cTok.kind != T_COMMENT)
+XX 	    expected(" (variable declaration) comma or identifier");
+XX 	getTok();		/* don't nuke spaces or comments */
+XX     }
+XX 
+XX     /* Output any whitespace given before the type declaration */
+XX     for (i=0; i<n&&(idents[i].kind==T_SPACE||idents[i].kind==T_COMMENT); i++){
+XX 	fputs(idents[i].str, stdout);
+XX 	free(idents[i].str);
+XX     }
+XX 
+XX     /* Translate type specification */
+XX     indir[0]=index[0]='\0';
+XX     parseTypeDecl(indir, index);
+XX 
+XX     /* Output the identifiers, with appropriate modification for 
+XX        ptr & array types */
+XX     putchar(' ');		/* separate RECORD from first element...? */
+XX     for (; i<n; i++) {
+XX 	if (idents[i].kind == T_ZIP && indir[0]!='\0')
+XX 	    fputs(indir, stdout);
+XX 	fputs(idents[i].str, stdout);
+XX 	if (idents[i].kind == T_ZIP && index[0]!='\0')
+XX 	    fputs(index, stdout);
+XX 	free(idents[i].str);
+XX     }
+XX     if (cTok.kind == T_SEMI)
+XX 	putchar(';');
+XX }
+XX 
+XX /*---- parseProcedure -------------------------------------------------------
+XX On entry, cTok is "PROCEDURE" or "FUNCTION".
+XX On exit, cTok is the token after the semicolon after the function header.
+XX 
+XX Turns declarations like
+XX     foo(a:int; b:int)
+XX into
+XX     foo(a,b)
+XX     int a;
+XX     int b;
+XX 
+XX Breaks up function declarations into 
+XX     1. name
+XX     2. parameter declarations
+XX     3. type (or 'void', if procedure)
+XX Breaks up parameter declarations into an array of pgroups.
+XX ----------------------------------------------------------------------------*/
+XX void
+XX parseProcedure()
+XX {
+XX     boolean isProcedure;
+XX     boolean isForward;
+XX     sstr fnName;
+XX     sstr fnType;
+XX     struct pgroup *pgps=NULL;
+XX     int i, npgp=0;
+XX     register struct pgroup *p;
+XX 
+XX     /* Remember whether is returns a value or not */
+XX     isProcedure = (cTok.kind == T_PROC);
+XX     /* Get function or procedure name, skipping space & comments */
+XX     getThing("function name", T_ZIP);
+XX     strcpy(fnName, cTok.str);
+XX     skipSpace();			/* eat the function name */
+XX     /* Get open paren (or semicolon of a parameterless procedure or fn) */
+XX     if (cTok.kind == T_LPAREN) {
+XX 	do {
+XX 	    register char *cp;
+XX 	    /* Allocate and initialize another parameter group */
+XX 	    if (npgp++ == 0) pgps=MALLOC(struct pgroup, 1);
+XX 	    else pgps = REALLOC(pgps, struct pgroup, npgp);
+XX 	    p = pgps + npgp-1;
+XX 	    p->pclass[0] = p->ptype[0] = '\0';
+XX 
+XX 	    /* Get optional class keyword */
+XX 	    skipSpace();		/* eat the paren or semicolon */
+XX 	    if (cTok.kind == T_VAR) {
+XX 		strcpy(p->pclass, cTok.str);
+XX 		skipSpace();		/* eat the class keyword */
+XX 	    }
+XX 	    /* Get identifier list & type */
+XX 	    cp = p->params;
+XX 	    /* Get identifiers, up to the colon that marks end of list */
+XX 	    while (cTok.kind != T_COLON) {
+XX 		register char *cq=cTok.str;
+XX 		if (cTok.kind != T_ZIP && cTok.kind != T_COMMA)
+XX 		    expected(" (variable declaration) comma or identifier");
+XX 		while (*cp++ = *cq++)
+XX 		    ;
+XX 		cp--;
+XX 		skipSpace();
+XX 	    }
+XX 	    *cp = 0;
+XX 
+XX 	    /* Get type specifier, which may be many tokens.  Primitive. */
+XX 	    skipSpace();
+XX 	    p->ptype[0]=0;
+XX 	    do {
+XX 		strcat(p->ptype, cTok.str);
+XX 		skipSpace();
+XX 	    } while (cTok.kind != T_SEMI && cTok.kind != T_RPAREN);
+XX 	} while (cTok.kind == T_SEMI);
+XX 	expectThing(") at end of param list", T_RPAREN);
+XX 	skipSpace();
+XX     }
+XX     /* Get return type */
+XX     if (isProcedure) {
+XX 	strcpy(fnType, "void");
+XX     } else {
+XX 	expectThing(":", T_COLON);
+XX 	getThing("function type", T_ZIP);
+XX 	strcpy(fnType, cTok.str);
+XX 	skipSpace();
+XX     }
+XX     expectThing("semicolon", T_SEMI);
+XX     /* Get optional FORWARD keyword */
+XX     skipSpace();
+XX     if (isForward = (cTok.kind == T_FORWARD)) {
+XX 	getThing(";", T_SEMI);
+XX 	skipSpace();
+XX     }
+XX 
+XX     /* Output the first part of the translated function declaration */
+XX     printf("%s %s(", fnType, fnName);
+XX     for (i=0, p=pgps; i++ < npgp; p++) {
+XX 	fputs(p->params, stdout);
+XX 	if (i<npgp) putchar(',');
+XX     }
+XX     putchar(')');
+XX     if (isForward)
+XX 	puts(";");
+XX     else {
+XX 	/* Output second part */
+XX 	putchar('\n');
+XX 	for (i=0, p=pgps; i++ < npgp; p++) {
+XX 	    if (p->pclass[0])
+XX 		fputs(p->pclass, stdout);	/* already xlated */
+XX 	    printf("%s %s;\n", p->ptype, p->params);
+XX 	}
+XX     }
+XX }
+XX 
+XX /*--- convertArrayBound -----------------------------------------------------
+XX Given the upper bound of a Pascal array, append the C array size specification
+XX to the buffer tindex.
+XX Lower bounds are ignored, 'cause it's safe to do so, and impossibly difficult
+XX to handle.
+XX ----------------------------------------------------------------------------*/
+XX void
+XX convertArrayBound(s, tindex)
+XX char *s, *tindex;
+XX {
+XX     sstr buf;
+XX     int ubound;
+XX 
+XX     ubound = atoi(s);
+XX     if (ubound == 0) {
+XX 	/* Probably symbolic */
+XX 	sprintf(buf, "[%s+1]", s);
+XX     } else {
+XX 	if (ubound < 0)
+XX 	    expected("positive upper bound");
+XX 	sprintf(buf, "[%d]", ubound+1);
+XX     }
+XX     strcat(tindex, buf);
+XX }
+XX 
+XX /*---- parseTypeDecl -------------------------------------------------------
+XX Translates a type definition in place.  Appends indirection & array subscrips,
+XX if any, to the buffers tindir and tindex.
+XX Never translates the semicolon- that is done in parseType.
+XX 
+XX On entry, cTok is the token that made us expect to find a type
+XX (e.g. the colon in a variable declaration, or the equals in a type declaration,
+XX On exit, cTok is the token after the type, usually T_SEMI (but may be T_END 
+XX in the last declaration in a RECORD).
+XX 
+XX Pascal (or at least, Turbo Pascal) doesn't allow constructions like
+XX     a = ^array [0..10] of integer;
+XX rather, it forces you to define the base type, too:
+XX     b = array [0..10] of integer;
+XX     a = ^b;
+XX Thus any type definition can be unambiguously broken up into 2 parts:
+XX     - the base type (which may be complex)
+XX     - if pointer, how many levels of indirection
+XX       else if array, how many indices the type has, with limits
+XX -----------------------------------------------------------------------*/
+XX void
+XX parseTypeDecl(tindir, tindex)
+XX char *tindir, *tindex;		/* buffer to put * or [n] in */
+XX {
+XX     skipSpace();		/* get initial token of type */
+XX 
+XX     switch (cTok.kind) {
+XX     case T_DEREF:		/* pointer type */
+XX 	strcat(tindir, "*");
+XX 	parseTypeDecl(tindir, tindex);
+XX 	break;
+XX     case T_LPAREN:		/* enumerated type */
+XX 	fputs("enum {", stdout);
+XX 	do {
+XX 	    parseSpace();
+XX 	    if (cTok.kind != T_RPAREN)
+XX 		fputs(cTok.str, stdout);
+XX 	} while (cTok.kind != T_RPAREN);
+XX 	getThing(";", T_SEMI);
+XX 	putchar('}');
+XX 	break;
+XX     case T_ARRAY:		/* array type */
+XX 	getThing("[", T_LBRACKET);
+XX 	do {					/* Get all the dimensions */
+XX 	    getThing("lower bound", T_ZIP);	/* Ignore lower bound except */
+XX 	    if (cTok.str[0] == '-')		/* to make sure >= 0 */
+XX 		expected("non-negative lower bound");
+XX 	    getThing("..", T_RANGE);
+XX 	    getThing("upper bound", T_ZIP);
+XX 	    convertArrayBound(cTok.str, tindex);
+XX 	    skipSpace();
+XX 	} while (cTok.kind == T_COMMA);
+XX 	expectThing("]", T_RBRACKET);
+XX 	getThing("OF", T_OF);
+XX 	parseTypeDecl(tindir, tindex);
+XX 	break;
+XX     case T_STRINGTYPE:		/* Turbo (& UCSD?) string type */
+XX 	printf("char");
+XX 	skipSpace();
+XX 	if (cTok.kind != T_LPAREN && cTok.kind != T_LBRACKET) 
+XX 	    expected("[ or ( after STRING");
+XX 	getThing("string length", T_ZIP);
+XX 	convertArrayBound(cTok.str, tindex);
+XX 	skipSpace();
+XX 	if (cTok.kind != T_RPAREN && cTok.kind != T_RBRACKET) 
+XX 	    expected("] or ) after STRING[");
+XX 	getThing(";", T_SEMI);
+XX 	break;
+XX     case T_FILE:		/* file type - not supported in C */
+XX 	strcat(tindir, "*");
+XX 	printf("FILE /* OF ");	/* show what it's a file of in the comment */
+XX 	do {
+XX 	    skipSpace();
+XX 	    if (cTok.kind != T_COMMENT);	/* avoid nesting comments */
+XX 		fputs(cTok.str, stdout);
+XX 	} while (cTok.kind != T_SEMI);
+XX 	printf(" */ ");
+XX 	break;
+XX     case T_RECORD:		/* struct definition */
+XX 	printf("struct {");
+XX 	parseSpace();		/* eat RECORD */
+XX 	do {
+XX 	    if (cTok.kind == T_CASE) {
+XX 		printf("/***# Sorry- variant records not supported\n\t");
+XX 		do {
+XX 		    if (cTok.kind != T_COMMENT)
+XX 			fputs(cTok.str, stdout);
+XX 		    getTok();
+XX 		} while (cTok.kind != T_END);
+XX 		printf(" ***/");
+XX 		break;
+XX 	    }
+XX 	    parseVarDec();
+XX 	    if (cTok.kind == T_SEMI)
+XX 		parseSpace();
+XX 	    else if (cTok.kind == T_END)
+XX 		putchar(';');		/* Pascal doesn't need ; but C does*/
+XX 	    else if (cTok.kind != T_CASE)
+XX 		expected("Either semicolon or END");
+XX 	} while (cTok.kind != T_END);
+XX 	parseSpace();		/* eat the END, get the semi */
+XX 	printf("}");
+XX 	break;
+XX     case T_ZIP:			/* probably a type keyword like 'integer' */
+XX 	fputs(cTok.str, stdout);
+XX 	skipSpace();		/* eat the type, get the semi */
+XX 	break;
+XX     default:			/* unexpected */
+XX 	expected("type");
+XX     }
+XX }
+XX 
+XX /*---- parseVar -------------------------------------------------------
+XX Translates the VAR section of a program or procedure.
+XX 
+XX On entry, cTok is "VAR".
+XX On exit, cTok is any section-starting keyword.
+XX Turns declarations like
+XX     foo : ^integer;
+XX into
+XX     int *foo;
+XX ----------------------------------------------------------------------------*/
+XX void
+XX parseVar()
+XX {
+XX     getTok();		/* eat the VAR */
+XX     do {
+XX 	parseVarDec();
+XX 	if (cTok.kind == T_SEMI)
+XX 	    parseSpace();
+XX     } while (!isSectionKeyword(cTok.kind));
+XX }
+XX 
+XX /*---- parseType -----------------------------------------------------------
+XX Translates the TYPE section of a program or procedure.
+XX On entry, cTok is TYPE.
+XX On exit, cTok is any section-starting keyword.
+XX 
+XX Turns declarations like
+XX     foo = array [0..10, LO..HI] of integer;
+XX     boo = record
+XX 	    x : foo;
+XX 	    y : ^foo
+XX 	  end;
+XX 
+XX into
+XX     typedef integer foo[11][HI+1];
+XX     typedef struct {
+XX 	foo x;
+XX 	foo *y;
+XX     } boo;
+XX ---------------------------------------------------------------------------*/
+XX void
+XX parseType()
+XX {
+XX     parseSpace();
+XX     do {
+XX 	sstr typ;
+XX 	sstr tindir, tindex;
+XX 	expectThing("type identifier", T_ZIP);
+XX 	strcpy(typ, cTok.str);
+XX 	parseSpace();
+XX 	expectThing("=", T_EQUALS);
+XX 	printf("typedef ");
+XX 	tindir[0]=tindex[0]=0;
+XX 	parseTypeDecl(tindir, tindex);
+XX 	expectThing(";", T_SEMI);
+XX 	printf(" %s%s%s;", tindir, typ, tindex);
+XX 	parseSpace();
+XX     } while (!isSectionKeyword(cTok.kind));
+XX }
+XX 
+XX /*---- parseLabel -------------------------------------------------------
+XX On entry, cTok is "LABEL".
+XX On exit, cTok is whatever follows the semicolon.
+XX 
+XX Turns declarations like
+XX LABEL foo, goo;
+XX into
+XX / * LABEL foo, goo; * /
+XX ----------------------------------------------------------------------------*/
+XX void
+XX parseLabel()
+XX {
+XX     skipSpace();		/* eat the LABEL */
+XX     printf("/* LABEL ");
+XX     /* Get identifiers, up to the semicolon that marks end of list */
+XX     while (cTok.kind != T_SEMI) {
+XX 	if (cTok.kind != T_ZIP && cTok.kind != T_COMMA)
+XX 	    expected(" (label declaration) comma or identifier");
+XX 	fputs(cTok.str, stdout);
+XX 	skipSpace();
+XX     }
+XX     /* Get semicolon without wiping out trailing space */
+XX     getTok();
+XX     fputs("; */", stdout);
+XX }
+XXX_EOF_XXX
+if test 14091 -ne "`wc -c < proc.c`"
+then
+    echo 'shar: transmission error on "proc.c"'
+fi
+echo 'shar: extracting "doalloc.c" (672 characters)'
+sed 's/^XX //' > doalloc.c << 'XXX_EOF_XXX'
+XX /* doalloc.c: memory allocations which exit upon error */
+XX 
+XX #include <stdio.h>
+XX #ifndef NULL
+XX #define NULL ((char *) 0)
+XX #endif
+XX 
+XX /* act like calloc, but return only if no error */
+XX char *DoRealloc(ptr,size)
+XX     char *ptr;
+XX     unsigned size;
+XX {
+XX     extern char *realloc();
+XX     char *p;
+XX 
+XX     if ((p=realloc(ptr, size)) == NULL) {
+XX 	fprintf(stderr, "memory allocation (realloc) error");
+XX 	exit(1);
+XX     }
+XX     return (p);
+XX }
+XX 
+XX 
+XX /* act like malloc, but return only if no error */
+XX char *DoMalloc(size)
+XX     unsigned size;
+XX {
+XX     extern char *malloc();
+XX     char *p;
+XX 
+XX     if ((p=malloc(size)) == NULL) {
+XX 	fprintf(stderr, "memory allocation (malloc) error");
+XX 	exit(1);
+XX     }
+XX     return (p);
+XX }
+XX 
+XXX_EOF_XXX
+if test 672 -ne "`wc -c < doalloc.c`"
+then
+    echo 'shar: transmission error on "doalloc.c"'
+fi
+
+
